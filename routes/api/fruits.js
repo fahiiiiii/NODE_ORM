@@ -112,18 +112,18 @@ router.get("/:id", async (req, res) => {
 })
 
 //! update a fruit by its id
-// router.put("/:id", async (req, res) => {
-//     const Fruit = req.app.locals.db.Fruit;
-//     const body = req.body;
-//     const requiredFruitID = req.params.id;
-//     const requiredFruit = await Fruit.findByPk(requiredFruitID);
-//     if (!requiredFruit) {
-//         res.status(404).json("Required fruit is not found");
-//     } else {
-//         await requiredFruit.update(body)
-//         res.json(requiredFruit);
-//     }
-// })
+router.put("/:id", async (req, res) => {
+    const Fruit = req.app.locals.db.Fruit;
+    const body = req.body;
+    const requiredFruitID = req.params.id;
+    const requiredFruit = await Fruit.findByPk(requiredFruitID);
+    if (!requiredFruit) {
+        res.status(404).json("Required fruit is not found");
+    } else {
+        await requiredFruit.update(body)
+        res.json(requiredFruit);
+    }
+})
 //! update fruit using its accesstoken
 router.put("/", authenticateToken, async (req, res) => {
     const Fruit = req.app.locals.db.Fruit;

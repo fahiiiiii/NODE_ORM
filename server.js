@@ -14,6 +14,7 @@ async function startServer() {
     
     // Sync all models with database
     // await sequelize.sync({ force: true }); // Warning: force:true will drop tables!
+    await sequelize.sync(); // Warning: force:true will drop tables!
     console.log('Database synchronized');
     
     // Make models available in your app

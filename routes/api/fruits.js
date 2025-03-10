@@ -1,13 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const {body,validationResult} = require('express-validator')
 const bcrypt = require('bcrypt');
 require('dotenv').config(); // Changed from 'abbrev' to 'dotenv' based on your db.js
 const authenticateToken = require('./../../middleware/auth')
 
 // Route to create a new fruit
-router.post("/", async (req, res) => {
+router.post("/",
+    [
+        body("fruit_name","Fruit name is required").notEmpty(),
+        body("email","email is required").notEmpty(),
+        body("email","Email must a valid email address").isEmail(),
+        body("password","password is required").notEmpty().isLength({min:6}),
+    ], 
+    async (req, res) => {
     try {
+        const errors= validationResult(req)
+        if(!errors.isEmpty()){
+            return res.json({errors:errors.array()})
+        }
         // Get the Fruit model from app.locals (set in server.js)
         const Fruit = req.app.locals.db.Fruit;
 
@@ -46,14 +58,26 @@ router.get("/all", async (req, res) => {
 
 
 //!fruit login
-router.post("/login", async (req, res) => {
-    const Fruit = req.app.locals.db.Fruit;
-
-    const { type, email, password, refreshToken } = req.body;
-    if (type == 'email') {
-        await handleEmailLogin(Fruit, email, res, password);
-    } else {
-        handleRefreshLogin(refreshToken, res, Fruit);
+router.post("/login", 
+    [
+        body("type","type is required and the type will be either 'email' or 'refresh'").notEmpty().isIn(['email','refresh'])
+    ],
+    async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.json({errors:errors.array()})
+        }
+        const Fruit = req.app.locals.db.Fruit;
+    
+        const { type, email, password, refreshToken } = req.body;
+        if (type == 'email') {
+            await handleEmailLogin(Fruit, email, res, password);
+        } else {
+            handleRefreshLogin(refreshToken, res, Fruit);
+        }
+    } catch (error) {
+        res.json("something is wrong with the server")
     }
 })
 

@@ -1,0 +1,3 @@
+npm install sequelize pg pg-hstore
+
+docker exec -it docker-orm-node-postgres-1 bash
